@@ -1,0 +1,137 @@
+.main-section .section-three {
+	height: 100%;
+	width: 100%;
+	margin-top: 1.5rem;
+}
+
+.main-section .section-three .section-header h3 {
+	margin-bottom: 1rem;
+}
+
+.main-section .section-three .stories {
+	height: 15rem;;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+}
+
+.main-section .section-three .stories .story {
+	width: 9rem;
+        height: 13rem;
+        border: 1px solid #FFFFFF;
+	border-radius: 10px;
+	display: flex;
+        align-items: flex-end;
+        justify-content: center;
+}
+
+.story .creator {
+	height: 13%;
+	width: 70%;
+	border-radius: 20px;
+	margin-bottom: 5px;
+	display: flex;
+	align-items: center;
+	background: #FFFFFF;
+	justify-content: space-around;
+}
+
+.story .creator .creator-avatar {
+	height: 25px;
+	width: 25px;
+	border-radius: 20px;
+}
+
+.story .creator .creator-avatar {
+	background-image: url(https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 50% 50%;
+}
+
+.main-section .section-three .stories .story:nth-child(1) {
+        background-image: url(https://plus.unsplash.com/premium_photo-1661891622579-bee76e28c304?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHlyYW1pZCUyMGVneXB0fGVufDB8fDB8fHww);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 50% 50%;
+}
+
+.main-section .section-three .stories .story:nth-child(2) {
+	background-image: url(https://media.istockphoto.com/id/1470096934/photo/beautiful-red-flowers-blossom-with-early-morning-dolomites-alps-mountain-landscape-photo-giau.webp?b=1&s=170667a&w=0&k=20&c=NWEHsGyQqw_O3jcSBz9ch6MvTVYfN8bXu-t6mkFDjDM=);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 50% 50%;
+	margin-right: 2rem;
+}
+
+.story .creator small {
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+.main-section .section-three .suggestions-box {
+	width: 100%;
+	height: 13rem;
+}
+
+.main-section .section-three .suggestions-box h3 {
+	margin-bottom: 1rem;
+}
+
+.main-section .section-three .suggestions {
+	width: 100%;
+	height: 13rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.suggestions .single-suggestion {
+	width: 100%;
+	height: 30%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.suggestions .single-suggestion div:nth-child(1) {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.suggestions .single-suggestion div:nth-child(1) small {
+	width: 7rem;
+	font-weight: bold;
+	word-wrap: break-word;
+}
+
+.suggestions .single-suggestion button {
+	height: 2rem;
+	width: 5rem;
+	border: none;
+	border-radius: 1rem;
+	font-weight: bold;
+	background: #000000;
+	color: #FFFFFF;
+	margin-right: 2rem;
+}
+
+.suggestion-avatar:nth-child(1) {
+	height: 3rem;
+	width: 3rem;
+	border: 1px solid #FDEF9E;
+	border-radius: 100%;
+	background: url(https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGJsYWNrJTIwcGVvcGxlfGVufDB8fDB8fHww);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 50% 50%;
+	margin-right: 0.7rem;
+}
+
+.suggestions small strong {
+	margin-top: 1rem;
+}

@@ -1,0 +1,142 @@
+.main-section .section-one {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	padding: 60px 0;
+}
+
+.user-avatar-box {
+	height: 7.5rem;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+}
+
+.main-section .section-one .logo, .main-section .section-one .user-avatar {
+	height: 5rem;
+	width: 5rem;
+	border: 1px;
+	border-radius: 100%;
+	display: inline-block;
+}
+
+.main-section .section-one .user-avatar {
+	position: absolute;
+	right: 4rem;
+	z-index: 1;
+	background: url(https://images.unsplash.com/photo-1529111290557-82f6d5c6cf85?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGJsYWNrJTIwbWFuJTIwZmFjZXxlbnwwfHwwfHx8MA%3D%3D);
+	background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 50% 50%;
+}
+
+.main-section .section-one .logo {
+	position: absolute;
+	left: 4rem;
+	background: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDeY4FJLnl1UDLuU8VJHPoqPaAerhqhrbDFg&usqp=CAU);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 50% 50%;
+}
+
+.handle-box {
+	height: 3rem;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-top: 2.5rem;
+}
+
+.menu-box {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-top: 1rem;
+}
+
+.menu-box ul {
+	display: flex;
+	flex-direction: column;
+	list-style-type: none;
+	padding-bottom: 5rem;
+}
+
+.menu-box ul li button {
+	height: 3rem;	
+	width: 15rem;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: row;
+	border: none;
+	color: #000000;
+	font-weight: bold;
+	background: inherit;
+}
+
+.menu-box ul li button:hover {
+        display: initial;
+        height: 3rem;
+        width: 15rem;
+	display: flex;
+        justify-content: space-around;
+	align-items: center;
+        flex-direction: row;
+        border: none;
+        color: #FFFFFF;
+        background: #000000;
+        border-radius: 18px;
+}
+
+.menu-box ul li button div {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.menu-box ul li button div i {
+	margin: 0 10px 0 7px;
+}
+
+.menu-box ul li button div p {
+	width: 10rem;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.menu-box ul li button span:nth-child(2) {
+	border-radius: 100%;
+	color: #FFFFFF;
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+        justify-content: center;
+        align-items: center;
+}
+
+.menu-box ul li .unread {
+	background: #000000;
+}
+
+.menu-box ul li button:hover ~ .unread {
+        background: #FFFFFF;
+        border-radius: 100%;
+        color: #000000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+}
+
+.main-section .section-one .logo-box {
+	height: 50rem;
+	background: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDeY4FJLnl1UDLuU8VJHPoqPaAerhqhrbDFg&usqp=CAU);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: 50% 50%;
+}
