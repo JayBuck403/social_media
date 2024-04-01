@@ -1,11 +1,11 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """FileStorage class"""
 import json
 from models.base_model import BaseModel
 from models.user import User
 from models.post import Post
-from models.comment import comment
-from models.likes import likes
+from models.comment import Comment
+from models.likes import Likes
 
 
 class FileStorage:
