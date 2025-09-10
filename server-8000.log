@@ -9,6 +9,7 @@ nohup: ignoring input
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 982-725-500
-127.0.0.1 - - [10/Sep/2025 01:41:19] "GET /api/health HTTP/1.1" 200 -
-127.0.0.1 - - [10/Sep/2025 01:41:19] "[35m[1mPOST /api/Post HTTP/1.1[0m" 201 -
-127.0.0.1 - - [10/Sep/2025 01:41:19] "GET /api/Post HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2025 02:10:11] "GET /users HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2025 02:10:11] "GET /posts HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2025 02:10:11] "[35m[1mPOST /posts HTTP/1.1[0m" 201 -
+127.0.0.1 - - [10/Sep/2025 02:10:11] "GET /posts HTTP/1.1" 200 -

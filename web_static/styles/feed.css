@@ -147,3 +147,17 @@ small {
 	color: #ECF0F1;
 	font-weight: bold;
 }
+
+@media (max-width: 768px) {
+	.section-two .feed {
+		height: auto;
+	}
+	.reaction-container {
+		flex-direction: column;
+		height: auto;
+		gap: 8px;
+	}
+	.reaction-container .reaction-box, .other-reaction-box {
+		width: 100%;
+	}
+}

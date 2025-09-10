@@ -23,3 +23,16 @@
 	height: 100%;
 	width: 60%;
 }
+
+@media (max-width: 768px) {
+	.main-section {
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.main-section .section-one, .main-section .section-three {
+		width: 100%;
+	}
+	.main-section .section-two {
+		width: 100%;
+	}
+}

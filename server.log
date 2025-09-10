@@ -9,3 +9,11 @@ nohup: ignoring input
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 982-725-500
+ * Detected change in '/workspace/app.py', reloading
+ * Restarting with stat
+Traceback (most recent call last):
+  File "/workspace/app.py", line 19, in <module>
+    from database import Base, engine, SessionLocal
+  File "/workspace/database.py", line 4, in <module>
+    from sqlalchemy import create_engine
+ModuleNotFoundError: No module named 'sqlalchemy'
