@@ -48,3 +48,15 @@ DB: SQLite at `/workspace/app.db`. Tables auto-create on startup.
 python seed.py
 ```
 
+## Auth
+
+- Register: `POST /auth/register` body `{ email, password, first_name?, last_name? }`
+- Login: `POST /auth/login` body `{ email, password }`
+- Use the returned JWT to create content:
+  - `Authorization: Bearer <token>` on `POST /posts`, `POST /posts/:id/comments`, `POST /posts/:id/likes`
+
+## Pagination
+
+- `GET /posts?page=1&page_size=10` returns `{ items, page, page_size, total }`
+- `GET /posts/:id/comments?page=1&page_size=10` same shape
+

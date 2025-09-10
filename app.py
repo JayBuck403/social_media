@@ -7,6 +7,8 @@ serves the static frontend under /.
 
 from flask import Flask, jsonify, request, send_from_directory, abort
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import os
 
 from models import storage
@@ -17,15 +19,29 @@ from models.likes import Likes
 
 # SQLAlchemy imports
 from database import Base, engine, SessionLocal
+from sqlalchemy import inspect, text
 from models.sa_models import User as SAUser, Post as SAPost, Comment as SAComment, Like as SALike
 
 
 def create_app() -> Flask:
     app = Flask(__name__, static_folder="web_static", static_url_path="")
     CORS(app)
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "dev-secret-change-me")
+    bcrypt = Bcrypt(app)
+    jwt = JWTManager(app)
 
     # Create DB tables if they do not exist
     Base.metadata.create_all(bind=engine)
+    # Minimal migration: add password_hash column if missing
+    try:
+        insp = inspect(engine)
+        user_cols = [c["name"] for c in insp.get_columns("users")]
+        if "password_hash" not in user_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE users ADD COLUMN password_hash VARCHAR"))
+    except Exception:
+        # Best-effort; avoid startup crash if inspection fails
+        pass
 
     @app.teardown_appcontext
     def remove_session(exception=None):
@@ -156,6 +172,36 @@ def create_app() -> Flask:
         }
 
     # Users
+    @app.route("/auth/register", methods=["POST"])
+    def register():
+        payload = request.get_json(silent=True) or {}
+        email = (payload.get("email") or "").strip().lower()
+        password = payload.get("password")
+        if not email or not password:
+            abort(400, description="email and password required")
+        db = SessionLocal()
+        existing = db.query(SAUser).filter(SAUser.email == email).first()
+        if existing:
+            abort(409, description="email already registered")
+        pw_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+        user = SAUser(email=email, password_hash=pw_hash, first_name=payload.get("first_name"), last_name=payload.get("last_name"))
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        token = create_access_token(identity=user.id)
+        return jsonify({"token": token, "user": serialize_user(user) }), 201
+
+    @app.route("/auth/login", methods=["POST"])
+    def login():
+        payload = request.get_json(silent=True) or {}
+        email = (payload.get("email") or "").strip().lower()
+        password = payload.get("password") or ""
+        db = SessionLocal()
+        user = db.query(SAUser).filter(SAUser.email == email).first()
+        if not user or not user.password_hash or not bcrypt.check_password_hash(user.password_hash, password):
+            abort(401, description="invalid credentials")
+        token = create_access_token(identity=user.id)
+        return jsonify({"token": token, "user": serialize_user(user) })
     @app.route("/users", methods=["POST"])
     def create_user():
         payload = request.get_json(silent=True) or {}
@@ -178,10 +224,12 @@ def create_app() -> Flask:
 
     # Posts
     @app.route("/posts", methods=["POST"])
+    @jwt_required()
     def create_post():
         payload = request.get_json(silent=True) or {}
         db = SessionLocal()
-        post = SAPost(text=payload.get("text"), user_id=payload.get("user_id"))
+        user_id = get_jwt_identity()
+        post = SAPost(text=payload.get("text"), user_id=user_id)
         db.add(post)
         db.commit()
         db.refresh(post)
@@ -190,8 +238,22 @@ def create_app() -> Flask:
     @app.route("/posts", methods=["GET"])
     def list_posts():
         db = SessionLocal()
-        posts = db.query(SAPost).order_by(SAPost.created_at.desc()).all()
-        return jsonify([serialize_post(p) for p in posts])
+        try:
+            page = int(request.args.get("page", 1))
+            page_size = int(request.args.get("page_size", 10))
+        except ValueError:
+            page, page_size = 1, 10
+        page = max(1, page)
+        page_size = max(1, min(50, page_size))
+        q = db.query(SAPost).order_by(SAPost.created_at.desc())
+        total = q.count()
+        posts = q.offset((page - 1) * page_size).limit(page_size).all()
+        return jsonify({
+            "items": [serialize_post(p) for p in posts],
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+        })
 
     @app.route("/posts/<post_id>", methods=["GET"])
     def get_post(post_id):
@@ -228,10 +290,12 @@ def create_app() -> Flask:
 
     # Comments
     @app.route("/posts/<post_id>/comments", methods=["POST"])
+    @jwt_required()
     def create_comment(post_id):
         payload = request.get_json(silent=True) or {}
         db = SessionLocal()
-        comment = SAComment(comment=payload.get("comment"), user_id=payload.get("user_id"), post_id=post_id)
+        user_id = get_jwt_identity()
+        comment = SAComment(comment=payload.get("comment"), user_id=user_id, post_id=post_id)
         db.add(comment)
         db.commit()
         db.refresh(comment)
@@ -240,15 +304,31 @@ def create_app() -> Flask:
     @app.route("/posts/<post_id>/comments", methods=["GET"])
     def list_comments(post_id):
         db = SessionLocal()
-        comments = db.query(SAComment).filter(SAComment.post_id == post_id).order_by(SAComment.created_at.desc()).all()
-        return jsonify([serialize_comment(c) for c in comments])
+        try:
+            page = int(request.args.get("page", 1))
+            page_size = int(request.args.get("page_size", 10))
+        except ValueError:
+            page, page_size = 1, 10
+        page = max(1, page)
+        page_size = max(1, min(50, page_size))
+        q = db.query(SAComment).filter(SAComment.post_id == post_id).order_by(SAComment.created_at.desc())
+        total = q.count()
+        comments = q.offset((page - 1) * page_size).limit(page_size).all()
+        return jsonify({
+            "items": [serialize_comment(c) for c in comments],
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+        })
 
     # Likes
     @app.route("/posts/<post_id>/likes", methods=["POST"])
+    @jwt_required()
     def like_post(post_id):
         payload = request.get_json(silent=True) or {}
         db = SessionLocal()
-        like = SALike(user_id=payload.get("user_id"), post_id=post_id)
+        user_id = get_jwt_identity()
+        like = SALike(user_id=user_id, post_id=post_id)
         db.add(like)
         db.commit()
         db.refresh(like)

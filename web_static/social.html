@@ -147,10 +147,17 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			var apiBase = '';
+			var jwt = null;
 			var feedRoot = document.querySelector('.section-two .feed');
 			var feedList = document.createElement('div');
 			feedList.id = 'feed-list';
 			feedRoot.appendChild(feedList);
+
+			// Simple auth UI (demo only)
+			var authBar = document.createElement('div');
+			authBar.style.cssText = 'display:flex; gap:8px; align-items:center; margin-bottom:8px;';
+			authBar.innerHTML = '<input id="email" placeholder="email" style="flex:1; padding:6px; border:1px solid #ECF0F1; border-radius:6px;"/><input type="password" id="password" placeholder="password" style="flex:1; padding:6px; border:1px solid #ECF0F1; border-radius:6px;"/><button id="login" style="padding:6px 10px; border:none; border-radius:6px; background:#000; color:#fff; font-weight:bold;">Login</button>';
+			feedRoot.prepend(authBar);
 
 			function escapeHtml(str) {
 				return String(str || '')
@@ -167,9 +174,6 @@
 					feedList.innerHTML = '<small>No posts yet</small>';
 					return;
 				}
-				posts.sort(function(a, b) {
-					return new Date(b.created_at) - new Date(a.created_at);
-				});
 				posts.forEach(function (p) {
 					var container = document.createElement('div');
 					container.className = 'post-container';
@@ -178,12 +182,36 @@
 				});
 			}
 
-			function fetchPosts() {
-				fetch(apiBase + '/posts')
+			var currentPage = 1;
+			var pageSize = 10;
+			var loadMoreBtn = document.createElement('button');
+			loadMoreBtn.textContent = 'Load more';
+			loadMoreBtn.style.cssText = 'margin-top:8px; padding:8px 12px; border:none; border-radius:8px; background:#000; color:#fff; font-weight:bold;';
+			loadMoreBtn.addEventListener('click', function () {
+				currentPage += 1;
+				fetchPosts(true);
+			});
+
+			function fetchPosts(append) {
+				fetch(apiBase + '/posts?page=' + currentPage + '&page_size=' + pageSize)
 					.then(function (r) { return r.json(); })
 					.then(function (data) {
-						var arr = Array.isArray(data) ? data : Object.values(data || {});
-						renderPosts(arr);
+						var arr = Array.isArray(data) ? data : (data.items || []);
+						if (append) {
+							arr.forEach(function (p) {
+								var container = document.createElement('div');
+								container.className = 'post-container';
+								container.innerHTML = '<p>' + escapeHtml(p.text || '') + '</p>';
+								feedList.appendChild(container);
+							});
+						} else {
+							renderPosts(arr);
+						}
+						if (data && data.total && (currentPage * pageSize) < data.total) {
+							if (!loadMoreBtn.parentNode) feedRoot.appendChild(loadMoreBtn);
+						} else if (loadMoreBtn.parentNode) {
+							loadMoreBtn.remove();
+						}
 					})
 					.catch(function () {
 						feedList.innerHTML = '<small>Failed to load posts</small>';
@@ -195,9 +223,11 @@
 				submit.addEventListener('click', function () {
 					var text = document.getElementById('new-post-text').value.trim();
 					if (!text) return;
+					var headers = { 'Content-Type': 'application/json' };
+					if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
 					fetch(apiBase + '/posts', {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
+						headers: headers,
 						body: JSON.stringify({ text: text, user_id: 'demo' })
 					}).then(function () {
 						document.getElementById('new-post-text').value = '';
@@ -205,6 +235,25 @@
 					});
 				});
 			}
+
+			// Demo login flow
+			document.getElementById('login').addEventListener('click', function () {
+				var email = document.getElementById('email').value.trim();
+				var password = document.getElementById('password').value.trim();
+				if (!email || !password) return;
+				fetch(apiBase + '/auth/register', {
+					method: 'POST', headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email: email, password: password })
+				}).then(function (r) {
+					if (r.status === 409) return fetch(apiBase + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, password: password }) });
+					return r;
+				}).then(function (r) { return r.json(); })
+				.then(function (data) {
+					jwt = data.token;
+					currentPage = 1;
+					fetchPosts();
+				});
+			});
 
 			fetchPosts();
 		});
