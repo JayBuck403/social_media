@@ -137,5 +137,54 @@
 				</div>
 			</div>
 		</section>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var apiBase = '/api';
+			var feedRoot = document.querySelector('.section-two .feed');
+			var feedList = document.createElement('div');
+			feedList.id = 'feed-list';
+			feedRoot.appendChild(feedList);
+
+			function escapeHtml(str) {
+				return String(str || '')
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/\"/g, '&quot;')
+					.replace(/'/g, '&#039;');
+			}
+
+			function renderPosts(posts) {
+				feedList.innerHTML = '';
+				if (!posts.length) {
+					feedList.innerHTML = '<small>No posts yet</small>';
+					return;
+				}
+				posts.sort(function(a, b) {
+					return new Date(b.created_at) - new Date(a.created_at);
+				});
+				posts.forEach(function (p) {
+					var container = document.createElement('div');
+					container.className = 'post-container';
+					container.innerHTML = '<p>' + escapeHtml(p.text || '') + '</p>';
+					feedList.appendChild(container);
+				});
+			}
+
+			function fetchPosts() {
+				fetch(apiBase + '/Post')
+					.then(function (r) { return r.json(); })
+					.then(function (data) {
+						var arr = Object.values(data || {});
+						renderPosts(arr);
+					})
+					.catch(function () {
+						feedList.innerHTML = '<small>Failed to load posts</small>';
+					});
+			}
+
+			fetchPosts();
+		});
+	</script>
 	</body>
 </html>
